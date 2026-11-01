@@ -31,6 +31,23 @@ export function nextRoom(progress: Progress): RoomSlug | null {
   return ROOM_SLUGS.find((slug) => !progress.solvedRooms.includes(slug)) ?? null;
 }
 
+export function startGame(progress: Progress, now: number): Progress {
+  return progress.startedAt === null ? { ...progress, startedAt: now } : progress;
+}
+
+export function markSolved(progress: Progress, slug: RoomSlug): Progress {
+  return progress.solvedRooms.includes(slug)
+    ? progress
+    : { ...progress, solvedRooms: [...progress.solvedRooms, slug] };
+}
+
+export function revealNextHint(progress: Progress, slug: RoomSlug, hintsInRoom: number): Progress {
+  const revealed = progress.hintsUsed[slug] ?? 0;
+  return revealed >= hintsInRoom
+    ? progress
+    : { ...progress, hintsUsed: { ...progress.hintsUsed, [slug]: revealed + 1 } };
+}
+
 function sanitize(candidate: unknown): Progress {
   if (typeof candidate !== "object" || candidate === null) {
     return EMPTY_PROGRESS;

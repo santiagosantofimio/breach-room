@@ -16,7 +16,12 @@ function openingDuration(): number {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : OPENING_SEQUENCE_MS;
 }
 
-export function BootScreen() {
+interface BootScreenProps {
+  hasStarted: boolean;
+  onBegin: () => void;
+}
+
+export function BootScreen({ hasStarted, onBegin }: BootScreenProps) {
   const { t } = useI18n();
   const { status, elapsedSeconds, retry } = useBootSequence();
   const [envelopeState, setEnvelopeState] = useState<EnvelopeState>("sealed");
@@ -30,7 +35,7 @@ export function BootScreen() {
   }, [envelopeState]);
 
   if (envelopeState === "open") {
-    return <Memo isSettled />;
+    return <Memo isSettled hasStarted={hasStarted} onBegin={onBegin} />;
   }
 
   return (
@@ -91,7 +96,7 @@ export function BootScreen() {
         </footer>
       </div>
 
-      {envelopeState === "opening" && <Memo isSettled={false} />}
+      {envelopeState === "opening" && <Memo isSettled={false} hasStarted={hasStarted} onBegin={onBegin} />}
     </main>
   );
 }

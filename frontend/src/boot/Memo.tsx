@@ -2,7 +2,13 @@ import { useEffect, useRef } from "react";
 import { useI18n } from "../i18n/I18nProvider";
 import { LanguageChoice } from "../i18n/LanguageChoice";
 
-export function Memo({ isSettled }: { isSettled: boolean }) {
+interface MemoProps {
+  isSettled: boolean;
+  hasStarted: boolean;
+  onBegin: () => void;
+}
+
+export function Memo({ isSettled, hasStarted, onBegin }: MemoProps) {
   const { t } = useI18n();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -34,12 +40,9 @@ export function Memo({ isSettled }: { isSettled: boolean }) {
             {paragraph}
           </p>
         ))}
-        <p className="memo__closed">
-          <span className="stamp" aria-hidden="true">
-            {t.memo.closedStamp}
-          </span>
-          {t.memo.closed}
-        </p>
+        <button type="button" className="action memo__begin" onClick={onBegin}>
+          {hasStarted ? t.memo.resume : t.memo.begin}
+        </button>
       </article>
     </section>
   );

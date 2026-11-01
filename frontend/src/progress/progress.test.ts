@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { EMPTY_PROGRESS, loadProgress, nextRoom, saveProgress, type Progress } from "./progress";
+import {
+  EMPTY_PROGRESS,
+  loadProgress,
+  markSolved,
+  nextRoom,
+  revealNextHint,
+  saveProgress,
+  startGame,
+  type Progress,
+} from "./progress";
 import { createSafeStore, type KeyValueStore } from "./safeStorage";
 
 function emptyStore(): KeyValueStore {
@@ -70,5 +79,27 @@ describe("progress", () => {
     ];
 
     expect(nextRoom({ ...EMPTY_PROGRESS, solvedRooms })).toBeNull();
+  });
+
+  it("keeps the first start time", () => {
+    const started = startGame(EMPTY_PROGRESS, 1000);
+
+    expect(started.startedAt).toBe(1000);
+    expect(startGame(started, 2000).startedAt).toBe(1000);
+  });
+
+  it("marks a room solved only once", () => {
+    const solved = markSolved(markSolved(EMPTY_PROGRESS, "recon"), "recon");
+
+    expect(solved.solvedRooms).toEqual(["recon"]);
+  });
+
+  it("reveals hints one at a time up to the room's limit", () => {
+    const once = revealNextHint(EMPTY_PROGRESS, "idor", 2);
+    const twice = revealNextHint(once, "idor", 2);
+
+    expect(once.hintsUsed.idor).toBe(1);
+    expect(twice.hintsUsed.idor).toBe(2);
+    expect(revealNextHint(twice, "idor", 2).hintsUsed.idor).toBe(2);
   });
 });
