@@ -1,5 +1,6 @@
 package dev.santiagosantofimio.breachroom.session;
 
+import dev.santiagosantofimio.breachroom.security.FramedDocument;
 import dev.santiagosantofimio.breachroom.security.JsonError;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,6 +20,11 @@ public class SessionFilter extends OncePerRequestFilter {
 
     public SessionFilter(SessionTokens tokens) {
         this.tokens = tokens;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        return FramedDocument.isRequestFor(request);
     }
 
     @Override

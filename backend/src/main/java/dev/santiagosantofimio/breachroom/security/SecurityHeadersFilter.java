@@ -15,9 +15,11 @@ public class SecurityHeadersFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        response.setHeader("Content-Security-Policy", LOCKED_DOWN_POLICY);
+        if (!FramedDocument.isRequestFor(request)) {
+            response.setHeader("Content-Security-Policy", LOCKED_DOWN_POLICY);
+            response.setHeader("X-Frame-Options", "DENY");
+        }
         response.setHeader("X-Content-Type-Options", "nosniff");
-        response.setHeader("X-Frame-Options", "DENY");
         response.setHeader("Referrer-Policy", "no-referrer");
         response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains");
         response.setHeader("Cache-Control", "no-store");

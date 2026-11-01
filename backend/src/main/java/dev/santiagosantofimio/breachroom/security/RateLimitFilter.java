@@ -25,7 +25,8 @@ public class RateLimitFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        if (limiter.tryAcquire(limitKey.apply(request))) {
+        String key = limitKey.apply(request);
+        if (key == null || limiter.tryAcquire(key)) {
             chain.doFilter(request, response);
             return;
         }
