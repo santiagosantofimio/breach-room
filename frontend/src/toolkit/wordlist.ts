@@ -1,0 +1,18 @@
+export const JWT_SECRET_WORDLIST = [
+  "secret",
+  "password",
+  "123456",
+  "changeme",
+  "admin",
+  "letmein",
+  "qwerty",
+  "kryptelia",
+  "kryptelia2019",
+  "welcome1",
+  "summer2019",
+  "synergy",
+  "compliance",
+  "default",
+  "jwtsecret",
+  "supersecret",
+] as const;

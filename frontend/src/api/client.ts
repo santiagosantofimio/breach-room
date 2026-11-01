@@ -2,6 +2,8 @@ import type { KeyValueStore } from "../progress/safeStorage";
 
 const SESSION_TOKEN_KEY = "breach-room.session";
 
+export const SESSION_HEADER = "X-Breach-Session";
+
 export const API_ORIGIN: string = import.meta.env.VITE_API_ORIGIN ?? "";
 
 type Fetch = typeof fetch;
@@ -27,4 +29,8 @@ export async function ensureSessionToken(fetcher: Fetch, store: KeyValueStore): 
   const { token } = (await response.json()) as { token: string };
   store.write(SESSION_TOKEN_KEY, token);
   return token;
+}
+
+export function clearSessionToken(store: KeyValueStore): void {
+  store.remove(SESSION_TOKEN_KEY);
 }
