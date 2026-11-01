@@ -21,7 +21,17 @@ public final class VirtualFileSystem {
         return Optional.ofNullable(filesByPath.get(normalize(path)));
     }
 
-    static String normalize(String path) {
+    public List<String> list(String directory) {
+        String prefix = normalize(directory).replaceAll("/$", "") + SEPARATOR;
+        return filesByPath.keySet().stream()
+                .filter(path -> path.startsWith(prefix))
+                .map(path -> path.substring(prefix.length()).split(SEPARATOR)[0])
+                .distinct()
+                .sorted()
+                .toList();
+    }
+
+    public static String normalize(String path) {
         List<String> resolved = new ArrayList<>();
         for (String segment : path.split(SEPARATOR)) {
             if (segment.equals(PARENT)) {
