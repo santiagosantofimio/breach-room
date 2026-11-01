@@ -101,6 +101,11 @@ export const en = {
     debriefDetection: "How to detect it",
     next: "Proceed to the next department",
     moreSoon: "The next department is closed for renovation. It opens in the next release.",
+    mailboxSearch: "Search mail",
+    mailboxOpen: "Search",
+    mailboxFrame: "Kryptelia Webmail preview",
+    mailboxProven: "The page ran your script. IT logged this flag:",
+    mailboxFailed: "The page ran your script, but the proof never arrived. Try again.",
   },
   toolkit: {
     label: "Issued toolkit",

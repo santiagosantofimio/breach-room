@@ -78,4 +78,61 @@ export const roomsEn: Partial<Record<RoomSlug, RoomContent>> = {
       owasp: "A01:2025 Broken Access Control",
     },
   },
+  sqli: {
+    letterhead: "Employee search, Human Resources",
+    story:
+      "The Directory lets anyone look up a colleague by name. An intern wrote it in one afternoon and it has never needed maintenance, which Facilities considers proof that it is secure. Behind it sits a table nobody is meant to read.",
+    objective: "Read the access token kept in the vault.",
+    hints: [
+      "Search for a lone single quote and read what the Directory says back.",
+      "Your input is being pasted into the statement. Three columns come back, so anything you add must return three as well.",
+      "One query's results can be appended to another's. The table you want has an id, a label and a secret.",
+    ],
+    debrief: {
+      happened:
+        "You closed the string literal and appended a second query, so the database returned vault rows alongside the employees.",
+      why: "Concatenation turns data into code: the database cannot tell which part came from the developer. Placeholders send the statement and the values separately, so input can never change the query's structure.",
+      detection:
+        "Flag concatenated SQL in static analysis, alert on database syntax errors from public endpoints, and watch request logs for UNION and metadata tables.",
+      owasp: "A05:2025 Injection",
+    },
+  },
+  xss: {
+    letterhead: "Webmail search, Information Technology",
+    story:
+      "Kryptelia Webmail has one working feature: it repeats your search back to you. IT calls this personalization. The preview below opens a live copy of the page.",
+    objective: "Make the webmail page run a script of your own and raise an alert box.",
+    hints: [
+      "Search for something and find where your words land in the page.",
+      "Try input that is not only text. Does the page treat angle brackets as data or as markup?",
+      "Several tags can run code without a script tag, and a script tag works too. The page only has to call alert.",
+    ],
+    debrief: {
+      happened:
+        "The page wrote your search term into its HTML without escaping it, so the browser parsed your input as markup and ran it.",
+      why: "When developer markup and attacker input arrive in one response, the browser cannot tell them apart. Output must be encoded for the context it lands in, and a Content Security Policy limits the damage when encoding is missed.",
+      detection:
+        "Scan templates for unescaped output, collect CSP violation reports, and test reflected parameters with harmless markers.",
+      owasp: "A05:2025 Injection",
+    },
+  },
+  traversal: {
+    letterhead: "Restore request, Information Technology",
+    story:
+      "The Backups portal serves files from one public folder. IT moved the encryption key somewhere safe, then wrote down where it went in a file in that same public folder.",
+    objective: "Download the encryption key.",
+    hints: [
+      "Read the portal's index, then read the readme it lists.",
+      "The file parameter is glued onto a folder path. Consider what a path can do besides go deeper.",
+      "Count the folders between the public directory and the root, then climb that many.",
+    ],
+    debrief: {
+      happened:
+        "You added parent directory segments to the file name. The server resolved them after joining the path, which walked you out of the public folder.",
+      why: "Joining input onto a base path does not keep the result inside it. The path must be normalized and then checked against the base directory, or files should be looked up through a list of known identifiers.",
+      detection:
+        "Alert on literal or encoded parent segments in parameters, run services without access outside their folder, and test file parameters with traversal payloads.",
+      owasp: "A01:2025 Broken Access Control",
+    },
+  },
 };

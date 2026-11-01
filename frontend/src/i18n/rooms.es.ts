@@ -78,4 +78,61 @@ export const roomsEs: Partial<Record<RoomSlug, RoomContent>> = {
       owasp: "A01:2025 Broken Access Control",
     },
   },
+  sqli: {
+    letterhead: "Búsqueda de empleados, Recursos Humanos",
+    story:
+      "El Directorio permite a cualquiera buscar a un colega por nombre. Lo escribió un practicante en una tarde y nunca ha requerido mantenimiento, lo que Mantenimiento considera prueba de que es seguro. Detrás hay una tabla que nadie debería leer.",
+    objective: "Lea el token de acceso guardado en la bóveda.",
+    hints: [
+      "Busque una comilla simple sola y lea lo que el Directorio responde.",
+      "Su entrada se está pegando dentro de la sentencia. Vuelven tres columnas, así que lo que agregue también debe devolver tres.",
+      "Los resultados de una consulta se pueden añadir a los de otra. La tabla que busca tiene un id, una etiqueta y un secreto.",
+    ],
+    debrief: {
+      happened:
+        "Cerró el literal de texto y añadió una segunda consulta, y la base de datos devolvió filas de la bóveda junto a los empleados.",
+      why: "Concatenar convierte datos en código: la base de datos no distingue qué parte escribió el desarrollador. Los parámetros envían la sentencia y los valores por separado, de modo que la entrada nunca cambia la estructura de la consulta.",
+      detection:
+        "Marque SQL concatenado en análisis estático, genere alertas ante errores de sintaxis desde endpoints públicos y vigile UNION y tablas de metadatos en los registros de peticiones.",
+      owasp: "A05:2025 Injection",
+    },
+  },
+  xss: {
+    letterhead: "Búsqueda de correo, Sistemas",
+    story:
+      "El correo web de Kryptelia tiene una función que sirve: repite su búsqueda. Sistemas lo llama personalización. La vista previa de abajo abre una copia en vivo de la página.",
+    objective: "Haga que la página de correo ejecute un script suyo y muestre una alerta.",
+    hints: [
+      "Busque algo y encuentre dónde cae su texto en la página.",
+      "Pruebe una entrada que no sea solo texto. ¿La página trata los corchetes angulares como datos o como marcado?",
+      "Varias etiquetas ejecutan código sin ser script, y una etiqueta script también sirve. La página solo tiene que llamar a alert.",
+    ],
+    debrief: {
+      happened:
+        "La página escribió su búsqueda en el HTML sin escaparla, así que el navegador interpretó su entrada como marcado y la ejecutó.",
+      why: "Cuando el marcado del desarrollador y la entrada del atacante llegan en una misma respuesta, el navegador no puede distinguirlos. La salida debe codificarse según el contexto, y una Content Security Policy limita el daño cuando falla esa codificación.",
+      detection:
+        "Revise plantillas buscando salida sin escapar, recoja reportes de violación de CSP y pruebe parámetros reflejados con marcadores inofensivos.",
+      owasp: "A05:2025 Injection",
+    },
+  },
+  traversal: {
+    letterhead: "Solicitud de restauración, Sistemas",
+    story:
+      "El portal de Respaldos sirve archivos de una carpeta pública. Sistemas movió la llave de cifrado a un lugar seguro y anotó dónde quedó en un archivo de esa misma carpeta pública.",
+    objective: "Descargue la llave de cifrado.",
+    hints: [
+      "Lea el índice del portal y luego el readme que lista.",
+      "El parámetro file se pega a la ruta de una carpeta. Piense qué más puede hacer una ruta además de bajar.",
+      "Cuente las carpetas entre el directorio público y la raíz, y suba esa cantidad.",
+    ],
+    debrief: {
+      happened:
+        "Agregó segmentos de directorio padre al nombre del archivo. El servidor los resolvió después de unir la ruta, y eso lo sacó de la carpeta pública.",
+      why: "Unir una entrada a una ruta base no la mantiene dentro de ella. La ruta debe normalizarse y luego verificarse contra el directorio base, o los archivos deben buscarse con una lista de identificadores conocidos.",
+      detection:
+        "Genere alertas ante segmentos padre literales o codificados en parámetros, ejecute los servicios sin acceso fuera de su carpeta y pruebe los parámetros de archivo con cargas de traversal.",
+      owasp: "A01:2025 Broken Access Control",
+    },
+  },
 };

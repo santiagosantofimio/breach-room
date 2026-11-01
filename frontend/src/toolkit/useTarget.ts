@@ -51,6 +51,18 @@ export function useTarget(slug: RoomSlug) {
   return { cookies, updateCookies, send };
 }
 
+export async function requestScriptProof(): Promise<string> {
+  const response = await sendTargetRequest(
+    dependencies,
+    { method: "POST", path: "/api/rooms/xss/proof", headers: [], body: "" },
+    null,
+  );
+  if (response.status !== 200) {
+    throw new Error(`Proof request failed with status ${response.status}`);
+  }
+  return (JSON.parse(response.body) as { flag: string }).flag;
+}
+
 export async function submitFlag(slug: RoomSlug, flag: string): Promise<boolean> {
   const response = await sendTargetRequest(
     dependencies,

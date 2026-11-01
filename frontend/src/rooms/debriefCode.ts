@@ -67,4 +67,46 @@ Document document(@PathVariable int id) {
             .orElseThrow(NotFound::new);
 }`,
   },
+  sqli: {
+    vulnerable: `List<Employee> search(String term) {
+    String sql = "SELECT id, name, department "
+            + "FROM employees WHERE name LIKE '%"
+            + term + "%'";
+    return jdbc.query(sql, employeeMapper);
+}`,
+    corrected: `List<Employee> search(String term) {
+    return client.sql("""
+            SELECT id, name, department
+            FROM employees WHERE name LIKE :pattern
+            """)
+            .param("pattern", "%" + term + "%")
+            .query(Employee.class)
+            .list();
+}`,
+  },
+  xss: {
+    vulnerable: `@GetMapping("/inbox")
+String inbox(@RequestParam String subject) {
+    return PAGE.replace("__SUBJECT__", subject);
+}`,
+    corrected: `@GetMapping("/inbox")
+String inbox(@RequestParam String subject) {
+    String escaped = HtmlUtils.htmlEscape(subject);
+    return PAGE.replace("__SUBJECT__", escaped);
+}`,
+  },
+  traversal: {
+    vulnerable: `@GetMapping("/download")
+String download(@RequestParam String file) {
+    return files.read(PUBLIC_DIRECTORY + file);
+}`,
+    corrected: `@GetMapping("/download")
+String download(@RequestParam String file) {
+    String path = normalize(PUBLIC_DIRECTORY + file);
+    if (!path.startsWith(PUBLIC_DIRECTORY)) {
+        throw new AccessDenied();
+    }
+    return files.read(path);
+}`,
+  },
 };

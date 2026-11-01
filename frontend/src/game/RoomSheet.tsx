@@ -3,6 +3,7 @@ import type { RoomSlug } from "../rooms/rooms";
 import { Debrief } from "./Debrief";
 import { FlagForm } from "./FlagForm";
 import { FoilSeal } from "./FoilSeal";
+import { MailboxViewer } from "./MailboxViewer";
 
 interface RoomSheetProps {
   slug: RoomSlug;
@@ -59,6 +60,8 @@ export function RoomSheet({ slug, isSolved, hintsRevealed, nextRoom, onRevealHin
           )}
         </section>
       )}
+
+      {slug === "xss" && !isSolved && <MailboxViewer />}
 
       {isSolved ? (
         <Debrief

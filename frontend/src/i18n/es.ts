@@ -102,6 +102,11 @@ export const es: Dictionary = {
     debriefDetection: "Cómo detectarlo",
     next: "Pasar al siguiente departamento",
     moreSoon: "El siguiente departamento está cerrado por remodelación. Abre en la próxima versión.",
+    mailboxSearch: "Buscar correo",
+    mailboxOpen: "Buscar",
+    mailboxFrame: "Vista previa del correo de Kryptelia",
+    mailboxProven: "La página ejecutó su script. Sistemas registró esta flag:",
+    mailboxFailed: "La página ejecutó su script, pero la prueba nunca llegó. Intente de nuevo.",
   },
   toolkit: {
     label: "Kit asignado",
