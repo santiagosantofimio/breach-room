@@ -13,9 +13,19 @@ interface RoomSheetProps {
   onRevealHint: (hintsInRoom: number) => void;
   onSolved: () => void;
   onNext: (slug: RoomSlug) => void;
+  onFinish: () => void;
 }
 
-export function RoomSheet({ slug, isSolved, hintsRevealed, nextRoom, onRevealHint, onSolved, onNext }: RoomSheetProps) {
+export function RoomSheet({
+  slug,
+  isSolved,
+  hintsRevealed,
+  nextRoom,
+  onRevealHint,
+  onSolved,
+  onNext,
+  onFinish,
+}: RoomSheetProps) {
   const { t } = useI18n();
   const room = t.rooms[slug];
 
@@ -67,8 +77,8 @@ export function RoomSheet({ slug, isSolved, hintsRevealed, nextRoom, onRevealHin
         <Debrief
           slug={slug}
           content={room.debrief}
-          nextLabel={nextRoom === null ? t.game.moreSoon : t.game.next}
-          onNext={nextRoom === null ? null : () => onNext(nextRoom)}
+          nextLabel={nextRoom === null ? t.game.leave : t.game.next}
+          onNext={nextRoom === null ? onFinish : () => onNext(nextRoom)}
         />
       ) : (
         <FlagForm slug={slug} onSolved={onSolved} />

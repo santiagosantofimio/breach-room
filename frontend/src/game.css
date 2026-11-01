@@ -184,6 +184,16 @@
   --sheet-rule: #7c7463;
 }
 
+.sheet[data-room="jwt"] {
+  --sheet-stock: #cfe6e2;
+  --sheet-rule: #3f8478;
+}
+
+.sheet[data-room="cmdinjection"] {
+  --sheet-stock: #f6c98f;
+  --sheet-rule: #b36b15;
+}
+
 .sheet__head {
   position: relative;
   padding-bottom: 0.625rem;
@@ -341,13 +351,6 @@
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-}
-
-.debrief__closed {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--sheet-rule);
-  font-family: var(--face-typed);
 }
 
 .debrief .action {
@@ -617,6 +620,72 @@
   gap: 1.25rem;
 }
 
+.finale {
+  min-height: 100dvh;
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  padding: 1rem var(--gutter) 2rem;
+  background: var(--stock-manila) url("/textures/manila-fibers.svg");
+}
+
+.finale__head {
+  justify-self: end;
+}
+
+.finale__head .language {
+  grid-auto-flow: column;
+  gap: 1rem;
+}
+
+.finale__title {
+  font-family: var(--face-print);
+  font-size: min(calc((100vw - 2 * var(--gutter)) / 3.3), 34vh);
+  font-weight: 400;
+  line-height: 0.86;
+  text-transform: uppercase;
+}
+
+.finale__lede {
+  max-width: 62ch;
+  font-size: 1.0625rem;
+  text-wrap: pretty;
+}
+
+.finale__results {
+  position: relative;
+  max-width: 40rem;
+}
+
+.finale__results .fields {
+  padding-right: 5.5rem;
+}
+
+.finale__results .fields__row {
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+}
+
+.finale__results .seal {
+  top: 0;
+}
+
+.finale__card {
+  width: 100%;
+  max-width: 40rem;
+  height: auto;
+  box-shadow: 0 2px 4px rgb(50 30 0 / 0.3), 0 18px 34px -14px rgb(50 30 0 / 0.6);
+}
+
+.finale__actions {
+  display: grid;
+  gap: 0.625rem;
+  max-width: 40rem;
+}
+
+.finale .fine-print {
+  grid-row: auto;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .kit__button:hover {
     background: var(--stock-flap);
@@ -684,6 +753,38 @@
   .kit__sheet {
     max-height: calc(100dvh - 7.5rem);
     overflow: auto;
+  }
+}
+
+@media (min-width: 60rem) {
+  .finale {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    column-gap: 3rem;
+    align-content: center;
+  }
+
+  .finale__head,
+  .finale__title {
+    grid-column: 1 / -1;
+  }
+
+  .finale__title {
+    font-size: min(calc((100vw - 2 * var(--gutter)) / 5.6), 30vh);
+  }
+
+  .finale__lede,
+  .finale__results,
+  .finale__actions {
+    grid-column: 1;
+  }
+
+  .finale__card {
+    grid-column: 2;
+    grid-row: 3 / span 3;
+  }
+
+  .finale .fine-print {
+    grid-column: 1 / -1;
   }
 }
 

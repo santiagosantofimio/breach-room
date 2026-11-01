@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  clearGame,
   EMPTY_PROGRESS,
   loadProgress,
   markSolved,
@@ -7,6 +8,7 @@ import {
   revealNextHint,
   saveProgress,
   startGame,
+  totalHints,
   type Progress,
 } from "./progress";
 import { createSafeStore, type KeyValueStore } from "./safeStorage";
@@ -30,7 +32,12 @@ describe("progress", () => {
 
   it("survives a save and load round trip", () => {
     const store = emptyStore();
-    const progress: Progress = { startedAt: 1000, solvedRooms: ["recon"], hintsUsed: { recon: 2 } };
+    const progress: Progress = {
+      startedAt: 1000,
+      finishedAt: null,
+      solvedRooms: ["recon"],
+      hintsUsed: { recon: 2 },
+    };
 
     saveProgress(store, progress);
 
@@ -55,6 +62,7 @@ describe("progress", () => {
 
     expect(loadProgress(storeHolding(tampered))).toEqual({
       startedAt: null,
+      finishedAt: null,
       solvedRooms: ["recon"],
       hintsUsed: { recon: 1 },
     });
@@ -89,9 +97,35 @@ describe("progress", () => {
   });
 
   it("marks a room solved only once", () => {
-    const solved = markSolved(markSolved(EMPTY_PROGRESS, "recon"), "recon");
+    const solved = markSolved(markSolved(EMPTY_PROGRESS, "recon", 1), "recon", 2);
 
     expect(solved.solvedRooms).toEqual(["recon"]);
+    expect(solved.finishedAt).toBeNull();
+  });
+
+  it("records the finish time with the last room", () => {
+    const almostDone: Progress = {
+      ...EMPTY_PROGRESS,
+      solvedRooms: ["recon", "checkout", "cookiejar", "idor", "sqli", "xss", "traversal", "jwt"],
+    };
+
+    expect(markSolved(almostDone, "cmdinjection", 5000).finishedAt).toBe(5000);
+  });
+
+  it("adds hints across rooms", () => {
+    expect(totalHints({ ...EMPTY_PROGRESS, hintsUsed: { recon: 2, idor: 1 } })).toBe(3);
+    expect(totalHints(EMPTY_PROGRESS)).toBe(0);
+  });
+
+  it("clears progress and room cookies", () => {
+    const store = emptyStore();
+    saveProgress(store, { ...EMPTY_PROGRESS, solvedRooms: ["recon"] });
+    store.write("breach-room.cookies.cookiejar", '{"profile":"x"}');
+
+    clearGame(store);
+
+    expect(loadProgress(store)).toEqual(EMPTY_PROGRESS);
+    expect(store.read("breach-room.cookies.cookiejar")).toBeNull();
   });
 
   it("reveals hints one at a time up to the room's limit", () => {

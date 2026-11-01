@@ -24,6 +24,8 @@ export const PLAYABLE_ROOMS: readonly RoomSlug[] = [
   "sqli",
   "xss",
   "traversal",
+  "jwt",
+  "cmdinjection",
 ];
 
 export function isPlayable(slug: RoomSlug): boolean {
@@ -38,4 +40,6 @@ export const ROOM_ENTRY_PATHS: Partial<Record<RoomSlug, string>> = {
   sqli: "/api/rooms/sqli/employees?search=Quill",
   xss: "/api/rooms/xss/inbox?subject=quarterly",
   traversal: "/api/rooms/traversal/",
+  jwt: "/api/rooms/jwt/badge",
+  cmdinjection: "/api/rooms/cmdinjection/",
 };

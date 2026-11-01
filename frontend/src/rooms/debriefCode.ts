@@ -109,4 +109,37 @@ String download(@RequestParam String file) {
     return files.read(path);
 }`,
   },
+  jwt: {
+    vulnerable: `Badge read(String token) {
+    String[] parts = token.split("\\\\.");
+    if ("none".equalsIgnoreCase(algorithmOf(parts[0]))) {
+        return badgeFrom(parts[1]);
+    }
+    verifySignature(parts, "kryptelia2019");
+    return badgeFrom(parts[1]);
+}`,
+    corrected: `Badge read(String token) {
+    String[] parts = token.split("\\\\.");
+    if (!"HS256".equals(algorithmOf(parts[0]))) {
+        throw new InvalidToken();
+    }
+    verifySignature(parts, properties.signingKey());
+    return badgeFrom(parts[1]);
+}`,
+  },
+  cmdinjection: {
+    vulnerable: `String ping(String host) throws IOException {
+    Process process = new ProcessBuilder(
+            "sh", "-c", "ping -c 3 " + host).start();
+    return outputOf(process);
+}`,
+    corrected: `String ping(String host) throws IOException {
+    if (!VALID_HOST.matcher(host).matches()) {
+        throw new InvalidHost();
+    }
+    Process process = new ProcessBuilder(
+            "ping", "-c", "3", host).start();
+    return outputOf(process);
+}`,
+  },
 };

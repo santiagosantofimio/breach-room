@@ -7,7 +7,7 @@ interface DebriefProps {
   slug: RoomSlug;
   content: RoomContent["debrief"];
   nextLabel: string;
-  onNext: (() => void) | null;
+  onNext: () => void;
 }
 
 export function Debrief({ slug, content, nextLabel, onNext }: DebriefProps) {
@@ -41,13 +41,9 @@ export function Debrief({ slug, content, nextLabel, onNext }: DebriefProps) {
       <p>{content.owasp}</p>
       <h4 className="debrief__label">{t.game.debriefDetection}</h4>
       <p>{content.detection}</p>
-      {onNext === null ? (
-        <p className="debrief__closed">{nextLabel}</p>
-      ) : (
-        <button type="button" className="action" onClick={onNext}>
-          {nextLabel}
-        </button>
-      )}
+      <button type="button" className="action" onClick={onNext}>
+        {nextLabel}
+      </button>
     </section>
   );
 }

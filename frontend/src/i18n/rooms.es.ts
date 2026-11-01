@@ -135,4 +135,42 @@ export const roomsEs: Partial<Record<RoomSlug, RoomContent>> = {
       owasp: "A01:2025 Broken Access Control",
     },
   },
+  jwt: {
+    letterhead: "Autorización de puertas, Seguridad del Edificio",
+    story:
+      "La última puerta del edificio lee un carné, revisa el rol impreso y abre para directores. Seguridad escribió su propio verificador después de leer medio artículo de blog. Su carné dice contratista.",
+    objective: "Logre que la puerta abra para un director.",
+    hints: [
+      "Reclame su carné y lea lo que dice de usted. El decoder entiende este formato.",
+      "El header de un token le dice al verificador cómo comprobarlo. Pregúntese qué pasa si ese header no dice la verdad.",
+      "Hay dos caminos: un token que afirma no necesitar firma, o un secreto lo bastante débil para el wordlist del decoder.",
+    ],
+    debrief: {
+      happened:
+        "Falsificó el carné de un director, declarando el token sin firma o crackeando su secreto, y la puerta le creyó.",
+      why: "El verificador dejó que el token eligiera cómo verificarlo, y el secreto era una palabra adivinable. Una firma no protege nada a menos que el servidor exija un algoritmo fijo y una clave larga y aleatoria.",
+      detection:
+        "Rechace tokens cuyo algoritmo no esté en una lista permitida del servidor, pruebe las claves de firma contra wordlists y genere alertas ante tokens sin firma o roles que contradigan su directorio de usuarios.",
+      owasp: "A07:2025 Authentication Failures",
+    },
+  },
+  cmdinjection: {
+    letterhead: "Prueba de red, Mantenimiento",
+    story:
+      "La llave de salida está en un servidor inalcanzable, salvo por una herramienta de ping que Mantenimiento escribió para no caminar hasta la sala de servidores. Le entrega su entrada a una shell. Este es el último departamento. Por favor lleve sus pertenencias.",
+    objective: "Lea la llave de escape del servidor de diagnóstico.",
+    hints: [
+      "Lea el índice y luego haga un ping honesto desde el repeater.",
+      "Una shell da significado a más cosas que los espacios. Piense en cómo ejecuta dos comandos en una línea.",
+      "Mire alrededor cuando entre: ls, cat y pwd responden. Las notas de la carpeta personal dicen dónde está la llave.",
+    ],
+    debrief: {
+      happened:
+        "Terminó el comando ping y encadenó el suyo, y la shell lo ejecutó con los privilegios de la herramienta.",
+      why: "Construir una línea de comando con la entrada le entrega a la shell un programa escrito por el atacante. Si llama al binario directamente con una lista de argumentos y valida el host, los separadores son texto inofensivo. La shell de esta sala es simulada: no se inició ningún proceso.",
+      detection:
+        "Marque concatenaciones hacia APIs de procesos, genere alertas ante metacaracteres de shell en parámetros y vigile procesos hijos inesperados bajo servicios web.",
+      owasp: "A05:2025 Injection",
+    },
+  },
 };

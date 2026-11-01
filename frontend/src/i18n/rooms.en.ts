@@ -135,4 +135,42 @@ export const roomsEn: Partial<Record<RoomSlug, RoomContent>> = {
       owasp: "A01:2025 Broken Access Control",
     },
   },
+  jwt: {
+    letterhead: "Door clearance, Building Security",
+    story:
+      "The last door out of the office block reads a badge, checks the role printed on it, and opens for directors. Security wrote its own verifier after reading half a blog post. Your badge says contractor.",
+    objective: "Get the door to open for a director.",
+    hints: [
+      "Collect your badge and read what it says about you. The decoder understands this format.",
+      "A token's header tells the verifier how to check it. Ask what happens when that header is not telling the truth.",
+      "There are two ways in: a token that claims it needs no signature, or a secret weak enough for the decoder's wordlist.",
+    ],
+    debrief: {
+      happened:
+        "You forged a director's badge, either by declaring the token unsigned or by cracking its secret, and the door believed you.",
+      why: "The verifier let the token choose how to verify it, and the secret was a word anyone could guess. A signature protects nothing unless the server insists on one fixed algorithm and a long random key.",
+      detection:
+        "Reject tokens whose algorithm is not on a server-side allowlist, test signing keys against wordlists, and alert on unsigned tokens or roles that disagree with your user directory.",
+      owasp: "A07:2025 Authentication Failures",
+    },
+  },
+  cmdinjection: {
+    letterhead: "Network test, Facilities",
+    story:
+      "The exit key sits on a server you cannot reach, except through a ping tool Facilities wrote so they could stop walking to the server room. It hands your input to a shell. This is the last department. Please take your belongings.",
+    objective: "Read the escape key from the diagnostics server.",
+    hints: [
+      "Read the index, then run an honest ping from the repeater.",
+      "A shell treats more than spaces as meaningful. Think about how you run two commands on one line.",
+      "Look around once you are in: ls, cat and pwd all answer. The notes in the home folder say where the key is.",
+    ],
+    debrief: {
+      happened:
+        "You ended the ping command and chained your own, and the shell ran it with the tool's privileges.",
+      why: "Building a command line from input hands the shell a program written by the attacker. Call the binary directly with an argument list and validate the host, and separators become harmless text. The shell in this room is simulated: no process was started.",
+      detection:
+        "Flag concatenation into process APIs, alert on shell metacharacters in parameters, and watch for unexpected child processes under web services.",
+      owasp: "A05:2025 Injection",
+    },
+  },
 };

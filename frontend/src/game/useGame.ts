@@ -1,5 +1,7 @@
 import { useCallback, useState } from "react";
 import {
+  clearGame,
+  EMPTY_PROGRESS,
   loadProgress,
   markSolved,
   revealNextHint,
@@ -22,11 +24,19 @@ export function useGame() {
   }, []);
 
   const begin = useCallback(() => update((current) => startGame(current, Date.now())), [update]);
-  const solve = useCallback((slug: RoomSlug) => update((current) => markSolved(current, slug)), [update]);
+  const solve = useCallback(
+    (slug: RoomSlug) => update((current) => markSolved(current, slug, Date.now())),
+    [update],
+  );
   const revealHint = useCallback(
     (slug: RoomSlug, hintsInRoom: number) => update((current) => revealNextHint(current, slug, hintsInRoom)),
     [update],
   );
 
-  return { progress, begin, solve, revealHint };
+  const reset = useCallback(() => {
+    clearGame(browserStore);
+    setProgress(EMPTY_PROGRESS);
+  }, []);
+
+  return { progress, begin, solve, revealHint, reset };
 }

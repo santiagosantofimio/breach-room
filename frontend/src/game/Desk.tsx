@@ -13,6 +13,7 @@ interface DeskProps {
   progress: Progress;
   onSolve: (slug: RoomSlug) => void;
   onRevealHint: (slug: RoomSlug, hintsInRoom: number) => void;
+  onFinish: () => void;
 }
 
 function firstOpenRoom(progress: Progress): RoomSlug {
@@ -22,7 +23,7 @@ function firstOpenRoom(progress: Progress): RoomSlug {
   );
 }
 
-export function Desk({ progress, onSolve, onRevealHint }: DeskProps) {
+export function Desk({ progress, onSolve, onRevealHint, onFinish }: DeskProps) {
   const { t } = useI18n();
   const [selected, setSelected] = useState<RoomSlug>(() => firstOpenRoom(progress));
   const [view, setView] = useState<DeskView>("room");
@@ -54,6 +55,7 @@ export function Desk({ progress, onSolve, onRevealHint }: DeskProps) {
           onRevealHint={(hintsInRoom) => onRevealHint(selected, hintsInRoom)}
           onSolved={() => onSolve(selected)}
           onNext={setSelected}
+          onFinish={onFinish}
         />
         <Toolkit key={`kit-${selected}`} slug={selected} />
       </main>
