@@ -5,7 +5,11 @@ export function ResponseView({ outcome }: { outcome: TargetOutcome | null }) {
   const { t } = useI18n();
 
   if (outcome === null) {
-    return <p className="kit__empty">{t.toolkit.noResponse}</p>;
+    return (
+      <div className="response--blank">
+        <p className="kit__empty">{t.toolkit.noResponse}</p>
+      </div>
+    );
   }
   if (outcome.kind !== "response") {
     return (

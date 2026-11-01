@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { useI18n } from "../i18n/I18nProvider";
 import { LanguageChoice } from "../i18n/LanguageChoice";
 import { totalHints, type Progress } from "../progress/progress";
-import { FoilSeal } from "./FoilSeal";
 import { formatDuration, rankFor } from "./ranking";
 import { downloadCanvas, drawShareCard } from "./shareCard";
 
@@ -16,6 +15,7 @@ interface FinaleProps {
 export function Finale({ progress, onPlayAgain }: FinaleProps) {
   const { t } = useI18n();
   const canvas = useRef<HTMLCanvasElement>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
 
   const elapsed = (progress.finishedAt ?? 0) - (progress.startedAt ?? 0);
   const hints = totalHints(progress);
@@ -28,11 +28,16 @@ export function Finale({ progress, onPlayAgain }: FinaleProps) {
   const fieldsKey = fields.map(({ value }) => value).join("|");
 
   useEffect(() => {
+    heading.current?.focus();
+  }, []);
+
+  useEffect(() => {
     if (canvas.current !== null) {
       void drawShareCard(canvas.current, {
         company: t.envelope.company,
         title: t.envelope.title,
         stamp: t.finale.stamp,
+        exit: t.finale.exit,
         fields,
         disclaimer: t.finale.cardDisclaimer,
       });
@@ -44,22 +49,28 @@ export function Finale({ progress, onPlayAgain }: FinaleProps) {
       <header className="finale__head">
         <LanguageChoice />
       </header>
-      <h1 className="finale__title">{t.finale.title}</h1>
+      <h1 ref={heading} className="finale__title" tabIndex={-1}>
+        {t.finale.title}
+      </h1>
       <p className="finale__lede">{t.finale.lede}</p>
 
-      <div className="finale__results">
-        <dl className="fields">
-          {fields.map(({ label, value }) => (
-            <div key={label} className="fields__row">
-              <dt>{label}</dt>
-              <dd>{value}</dd>
-            </div>
-          ))}
-        </dl>
-        <FoilSeal label={t.game.solvedSeal} />
-      </div>
+      <dl className="visually-hidden">
+        {fields.map(({ label, value }) => (
+          <div key={label}>
+            <dt>{label}</dt>
+            <dd>{value}</dd>
+          </div>
+        ))}
+      </dl>
 
-      <canvas ref={canvas} className="finale__card" width={1200} height={630} aria-label={t.finale.cardLabel} />
+      <canvas
+        ref={canvas}
+        className="finale__card"
+        width={1200}
+        height={630}
+        role="img"
+        aria-label={t.finale.cardLabel}
+      />
 
       <div className="finale__actions">
         <button

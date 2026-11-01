@@ -4,6 +4,11 @@ import type { RoomSlug } from "../rooms/rooms";
 export const roomsEn: Partial<Record<RoomSlug, RoomContent>> = {
   recon: {
     letterhead: "Visitor sign-in sheet",
+    form: {
+      reference: "Form KS-101",
+      columns: ["Visitor", "In", "Badge"],
+      rows: [["M. Quill", "08:58", "412"], ["T. Venn", "09:02", "377"], ["Contractor 1043", "09:14", "None issued"]],
+    },
     story:
       "The receptionist left in 2019. The sign-in sheet stayed, along with a note saying the building is locked and your badge does not exist. Somewhere behind this desk is a terminal nobody meant to publish.",
     objective: "Find the page Reception asked search engines not to read, and take what it sends back.",
@@ -23,6 +28,11 @@ export const roomsEn: Partial<Record<RoomSlug, RoomContent>> = {
   },
   checkout: {
     letterhead: "Purchase order, Internal Morale",
+    form: {
+      reference: "Form KS-204",
+      columns: ["Item", "Qty", "Credits"],
+      rows: [["Layoff mug", "1", "15"], ["Lanyard, used", "1", "40"], ["Master key", "1", "9,999"], ["Your balance", "", "100"]],
+    },
     story:
       "Internal Morale runs a shop where staff spend credits instead of receiving raises. The master key to Accounting sits on the top shelf at 9,999 credits. You were issued 100 credits and a warning.",
     objective: "Leave the shop with the master key.",
@@ -42,6 +52,11 @@ export const roomsEn: Partial<Record<RoomSlug, RoomContent>> = {
   },
   cookiejar: {
     letterhead: "Locker assignment, Human Resources",
+    form: {
+      reference: "Form KS-315",
+      columns: [],
+      rows: [["101", "Facilities"], ["102", "Payroll"], ["103", "Guest"], ["104", "Vacant"], ["105", "Vacant"], ["106", "Executive"]],
+    },
     story:
       "Lockers are assigned through a cookie HR describes as a trust-based identity solution. The executive locker opens for admins. You are, at this stage of your career, a guest.",
     objective: "Open the executive locker.",
@@ -61,6 +76,11 @@ export const roomsEn: Partial<Record<RoomSlug, RoomContent>> = {
   },
   idor: {
     letterhead: "Records request, The Archive",
+    form: {
+      reference: "Form KS-422",
+      columns: [],
+      rows: [["Requested by", "Contractor 1043"], ["Records in scope", "Own file only"], ["Verified by", "Honor system"], ["Status", "Assumed"]],
+    },
     story:
       "The Archive keeps every record Kryptelia hopes nobody will request. You may read your own file. The clerk verifies this by assuming you would not lie.",
     objective: "Read the Director's exit interview notes.",
@@ -80,6 +100,11 @@ export const roomsEn: Partial<Record<RoomSlug, RoomContent>> = {
   },
   sqli: {
     letterhead: "Employee search, Human Resources",
+    form: {
+      reference: "Form KS-510",
+      columns: [],
+      rows: [["Hugo Fenn", "The Archive"], ["Ines Carrow", "Human Resources"], ["Mara Quill", "Internal Morale"]],
+    },
     story:
       "The Directory lets anyone look up a colleague by name. An intern wrote it in one afternoon and it has never needed maintenance, which Facilities considers proof that it is secure. Behind it sits a table nobody is meant to read.",
     objective: "Read the access token kept in the vault.",
@@ -99,6 +124,11 @@ export const roomsEn: Partial<Record<RoomSlug, RoomContent>> = {
   },
   xss: {
     letterhead: "Webmail search, Information Technology",
+    form: {
+      reference: "Form KS-603",
+      columns: [],
+      rows: [["From", "IT Service Desk"], ["Subject", "Your search has been personalized"], ["Attachments", "One, unscanned"], ["Unread since", "2019"]],
+    },
     story:
       "Kryptelia Webmail has one working feature: it repeats your search back to you. IT calls this personalization. The preview below opens a live copy of the page.",
     objective: "Make the webmail page run a script of your own and raise an alert box.",
@@ -118,6 +148,11 @@ export const roomsEn: Partial<Record<RoomSlug, RoomContent>> = {
   },
   traversal: {
     letterhead: "Restore request, Information Technology",
+    form: {
+      reference: "Form KS-718",
+      columns: ["Folder", "Last backup", "Status"],
+      rows: [["public", "Last night", "Served"], ["private", "2019", "Redacted"], ["vault", "Never", "Safe, reportedly"]],
+    },
     story:
       "The Backups portal serves files from one public folder. IT moved the encryption key somewhere safe, then wrote down where it went in a file in that same public folder.",
     objective: "Download the encryption key.",
@@ -137,6 +172,11 @@ export const roomsEn: Partial<Record<RoomSlug, RoomContent>> = {
   },
   jwt: {
     letterhead: "Door clearance, Building Security",
+    form: {
+      reference: "Form KS-807",
+      columns: [],
+      rows: [["Name", "Contractor 1043"], ["Role", "Contractor"], ["Clearance", "Lobby, if accompanied"], ["Valid until", "Further notice"]],
+    },
     story:
       "The last door out of the office block reads a badge, checks the role printed on it, and opens for directors. Security wrote its own verifier after reading half a blog post. Your badge says contractor.",
     objective: "Get the door to open for a director.",
@@ -156,6 +196,11 @@ export const roomsEn: Partial<Record<RoomSlug, RoomContent>> = {
   },
   cmdinjection: {
     letterhead: "Network test, Facilities",
+    form: {
+      reference: "Form KS-914",
+      columns: [],
+      rows: [["Server still on", "X"], ["Cable plugged in", "X"], ["Key rotated", ""], ["Anyone told", ""]],
+    },
     story:
       "The exit key sits on a server you cannot reach, except through a ping tool Facilities wrote so they could stop walking to the server room. It hands your input to a shell. This is the last department. Please take your belongings.",
     objective: "Read the escape key from the diagnostics server.",

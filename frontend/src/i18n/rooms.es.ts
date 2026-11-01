@@ -4,6 +4,11 @@ import type { RoomSlug } from "../rooms/rooms";
 export const roomsEs: Partial<Record<RoomSlug, RoomContent>> = {
   recon: {
     letterhead: "Planilla de ingreso de visitantes",
+    form: {
+      reference: "Formulario KS-101",
+      columns: ["Visitante", "Ingreso", "Carné"],
+      rows: [["M. Quill", "08:58", "412"], ["T. Venn", "09:02", "377"], ["Contratista 1043", "09:14", "Sin asignar"]],
+    },
     story:
       "La recepcionista se fue en 2019. La planilla se quedó, junto con una nota que dice que el edificio está cerrado y que su carné no existe. Detrás de este escritorio hay una terminal que nadie quiso publicar.",
     objective: "Encuentre la página que Recepción pidió a los buscadores no leer, y tome lo que le devuelve.",
@@ -23,6 +28,11 @@ export const roomsEs: Partial<Record<RoomSlug, RoomContent>> = {
   },
   checkout: {
     letterhead: "Orden de compra, Moral Interna",
+    form: {
+      reference: "Formulario KS-204",
+      columns: ["Artículo", "Cant.", "Créditos"],
+      rows: [["Taza de despidos", "1", "15"], ["Cordón, usado", "1", "40"], ["Llave maestra", "1", "9.999"], ["Su saldo", "", "100"]],
+    },
     story:
       "Moral Interna administra una tienda donde el personal gasta créditos en lugar de recibir aumentos. La llave maestra de Contabilidad está en el estante superior por 9.999 créditos. A usted le asignaron 100 créditos y una advertencia.",
     objective: "Salga de la tienda con la llave maestra.",
@@ -42,6 +52,11 @@ export const roomsEs: Partial<Record<RoomSlug, RoomContent>> = {
   },
   cookiejar: {
     letterhead: "Asignación de casilleros, Recursos Humanos",
+    form: {
+      reference: "Formulario KS-315",
+      columns: [],
+      rows: [["101", "Mantenimiento"], ["102", "Nómina"], ["103", "Invitado"], ["104", "Libre"], ["105", "Libre"], ["106", "Ejecutivo"]],
+    },
     story:
       "Los casilleros se asignan con una cookie que Recursos Humanos describe como una solución de identidad basada en la confianza. El casillero ejecutivo abre para administradores. Usted es, en esta etapa de su carrera, un invitado.",
     objective: "Abra el casillero ejecutivo.",
@@ -61,6 +76,11 @@ export const roomsEs: Partial<Record<RoomSlug, RoomContent>> = {
   },
   idor: {
     letterhead: "Solicitud de registros, El Archivo",
+    form: {
+      reference: "Formulario KS-422",
+      columns: [],
+      rows: [["Solicitado por", "Contratista 1043"], ["Registros en alcance", "Solo expediente propio"], ["Verificado por", "Palabra de honor"], ["Estado", "Asumido"]],
+    },
     story:
       "El Archivo guarda cada registro que Kryptelia espera que nadie solicite. Usted puede leer su propio expediente. El archivista lo verifica asumiendo que usted no mentiría.",
     objective: "Lea las notas de la entrevista de salida del Director.",
@@ -80,6 +100,11 @@ export const roomsEs: Partial<Record<RoomSlug, RoomContent>> = {
   },
   sqli: {
     letterhead: "Búsqueda de empleados, Recursos Humanos",
+    form: {
+      reference: "Formulario KS-510",
+      columns: [],
+      rows: [["Hugo Fenn", "El Archivo"], ["Ines Carrow", "Recursos Humanos"], ["Mara Quill", "Moral Interna"]],
+    },
     story:
       "El Directorio permite a cualquiera buscar a un colega por nombre. Lo escribió un practicante en una tarde y nunca ha requerido mantenimiento, lo que Mantenimiento considera prueba de que es seguro. Detrás hay una tabla que nadie debería leer.",
     objective: "Lea el token de acceso guardado en la bóveda.",
@@ -99,6 +124,11 @@ export const roomsEs: Partial<Record<RoomSlug, RoomContent>> = {
   },
   xss: {
     letterhead: "Búsqueda de correo, Sistemas",
+    form: {
+      reference: "Formulario KS-603",
+      columns: [],
+      rows: [["De", "Mesa de ayuda de Sistemas"], ["Asunto", "Su búsqueda fue personalizada"], ["Adjuntos", "Uno, sin analizar"], ["Sin leer desde", "2019"]],
+    },
     story:
       "El correo web de Kryptelia tiene una función que sirve: repite su búsqueda. Sistemas lo llama personalización. La vista previa de abajo abre una copia en vivo de la página.",
     objective: "Haga que la página de correo ejecute un script suyo y muestre una alerta.",
@@ -118,6 +148,11 @@ export const roomsEs: Partial<Record<RoomSlug, RoomContent>> = {
   },
   traversal: {
     letterhead: "Solicitud de restauración, Sistemas",
+    form: {
+      reference: "Formulario KS-718",
+      columns: ["Carpeta", "Último respaldo", "Estado"],
+      rows: [["public", "Anoche", "Servida"], ["private", "2019", "Censurada"], ["vault", "Nunca", "Segura, dicen"]],
+    },
     story:
       "El portal de Respaldos sirve archivos de una carpeta pública. Sistemas movió la llave de cifrado a un lugar seguro y anotó dónde quedó en un archivo de esa misma carpeta pública.",
     objective: "Descargue la llave de cifrado.",
@@ -137,6 +172,11 @@ export const roomsEs: Partial<Record<RoomSlug, RoomContent>> = {
   },
   jwt: {
     letterhead: "Autorización de puertas, Seguridad del Edificio",
+    form: {
+      reference: "Formulario KS-807",
+      columns: [],
+      rows: [["Nombre", "Contratista 1043"], ["Rol", "Contratista"], ["Autorización", "Vestíbulo, acompañado"], ["Válido hasta", "Nuevo aviso"]],
+    },
     story:
       "La última puerta del edificio lee un carné, revisa el rol impreso y abre para directores. Seguridad escribió su propio verificador después de leer medio artículo de blog. Su carné dice contratista.",
     objective: "Logre que la puerta abra para un director.",
@@ -156,6 +196,11 @@ export const roomsEs: Partial<Record<RoomSlug, RoomContent>> = {
   },
   cmdinjection: {
     letterhead: "Prueba de red, Mantenimiento",
+    form: {
+      reference: "Formulario KS-914",
+      columns: [],
+      rows: [["Servidor encendido", "X"], ["Cable conectado", "X"], ["Llave rotada", ""], ["Alguien avisó", ""]],
+    },
     story:
       "La llave de salida está en un servidor inalcanzable, salvo por una herramienta de ping que Mantenimiento escribió para no caminar hasta la sala de servidores. Le entrega su entrada a una shell. Este es el último departamento. Por favor lleve sus pertenencias.",
     objective: "Lea la llave de escape del servidor de diagnóstico.",

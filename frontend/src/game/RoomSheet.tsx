@@ -1,9 +1,11 @@
+import { useEffect, useRef, useState } from "react";
 import { useI18n } from "../i18n/I18nProvider";
 import type { RoomSlug } from "../rooms/rooms";
 import { Debrief } from "./Debrief";
 import { FlagForm } from "./FlagForm";
 import { FoilSeal } from "./FoilSeal";
 import { MailboxViewer } from "./MailboxViewer";
+import { RoomFormBlock } from "./RoomFormBlock";
 
 interface RoomSheetProps {
   slug: RoomSlug;
@@ -28,6 +30,12 @@ export function RoomSheet({
 }: RoomSheetProps) {
   const { t } = useI18n();
   const room = t.rooms[slug];
+  const heading = useRef<HTMLHeadingElement>(null);
+  const [wasJustSolved, setWasJustSolved] = useState(false);
+
+  useEffect(() => {
+    heading.current?.focus({ preventScroll: true });
+  }, []);
 
   if (room === undefined) {
     return null;
@@ -39,8 +47,9 @@ export function RoomSheet({
   return (
     <article className="sheet" data-room={slug}>
       <header className="sheet__head">
-        <p className="sheet__letterhead">{room.letterhead}</p>
-        <h1 className="sheet__title">{t.route.rooms[slug]}</h1>
+        <h1 ref={heading} className="sheet__title" tabIndex={-1}>
+          {t.route.rooms[slug]}
+        </h1>
         {isSolved && <FoilSeal label={t.game.solvedSeal} />}
       </header>
 
@@ -53,10 +62,18 @@ export function RoomSheet({
         </div>
       </dl>
 
+      <RoomFormBlock
+        slug={slug}
+        letterhead={room.letterhead}
+        form={room.form}
+        receivedLabel={t.route.received}
+        stamp={isSolved ? t.game.solvedStamp : null}
+      />
+
       {!isSolved && (
         <section className="hints">
           <h2 className="hints__heading">{t.game.hintsHeading}</h2>
-          <ol className="hints__list">
+          <ol className="hints__list" aria-live="polite">
             {visibleHints.map((hint) => (
               <li key={hint}>{hint}</li>
             ))}
@@ -79,9 +96,16 @@ export function RoomSheet({
           content={room.debrief}
           nextLabel={nextRoom === null ? t.game.leave : t.game.next}
           onNext={nextRoom === null ? onFinish : () => onNext(nextRoom)}
+          takesFocus={wasJustSolved}
         />
       ) : (
-        <FlagForm slug={slug} onSolved={onSolved} />
+        <FlagForm
+          slug={slug}
+          onSolved={() => {
+            setWasJustSolved(true);
+            onSolved();
+          }}
+        />
       )}
     </article>
   );
