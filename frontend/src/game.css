@@ -220,12 +220,12 @@
 }
 
 .sheet__head:has(.seal) .sheet__title {
-  padding-right: 5rem;
+  padding-right: 5.25rem;
 }
 
 .sheet__head .seal {
-  width: 4rem;
-  height: 4rem;
+  width: 4.5rem;
+  height: 4.5rem;
 }
 
 .form {
@@ -553,7 +553,7 @@
 .seal__rim {
   fill: #5e4409;
   font-family: var(--face-form);
-  font-size: 9.5px;
+  font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
 }

@@ -92,7 +92,7 @@ export const en = {
     flagFailed: "The filing cabinet is not responding. Try again.",
     solvedStamp: "Filed",
     solvedSeal: "Department cleared",
-    sealRim: "NOT LEGALLY BINDING · NOT LEGALLY BINDING · ",
+    sealRim: "NOT LEGALLY BINDING · ",
     sealMark: "Fine",
     debriefHeading: "Compliance review",
     debriefHappened: "What happened",
