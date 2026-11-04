@@ -93,7 +93,7 @@ export const es: Dictionary = {
     flagFailed: "El archivador no responde. Intente de nuevo.",
     solvedStamp: "Radicada",
     solvedSeal: "Departamento superado",
-    sealRim: "SIN VALOR LEGAL · SIN VALOR LEGAL · SIN VALOR · ",
+    sealRim: "SIN VALOR LEGAL · ",
     sealMark: "Vale",
     debriefHeading: "Revisión de cumplimiento",
     debriefHappened: "Qué pasó",

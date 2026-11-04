@@ -5,7 +5,7 @@ const POINTS = 32;
 const OUTER_RADIUS = 58;
 const INNER_RADIUS = 52;
 const CENTER = 60;
-const RIM_TEXT_RADIUS = 40;
+const RIM_TEXT_RADIUS = 34;
 
 function serratedEdge(): string {
   return Array.from({ length: POINTS * 2 }, (_, index) => {
@@ -20,6 +20,8 @@ function rimPath(): string {
   const diameter = RIM_TEXT_RADIUS * 2;
   return `M${start} ${CENTER}a${RIM_TEXT_RADIUS} ${RIM_TEXT_RADIUS} 0 1 1 ${diameter} 0a${RIM_TEXT_RADIUS} ${RIM_TEXT_RADIUS} 0 1 1 -${diameter} 0`;
 }
+
+const rimLength = (2 * Math.PI * RIM_TEXT_RADIUS - 4).toFixed(1);
 
 export function FoilSeal({ label }: { label: string }) {
   const { t } = useI18n();
@@ -64,7 +66,7 @@ export function FoilSeal({ label }: { label: string }) {
       <circle cx={CENTER} cy={CENTER} r="47" className="seal__ring" />
       <circle cx={CENTER} cy={CENTER} r="31" className="seal__ring" />
       <text className="seal__rim">
-        <textPath href={`#${rim}`} textLength="248">
+        <textPath href={`#${rim}`} textLength={rimLength}>
           {t.game.sealRim}
         </textPath>
       </text>
