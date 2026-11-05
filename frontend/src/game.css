@@ -220,12 +220,23 @@
 }
 
 .sheet__head:has(.seal) .sheet__title {
-  padding-right: 5.25rem;
+  padding-right: 5rem;
 }
 
 .sheet__head .seal {
-  width: 4.5rem;
-  height: 4.5rem;
+  width: 4rem;
+  height: 4rem;
+}
+
+@media (min-width: 22.5rem) {
+  .sheet__head:has(.seal) .sheet__title {
+    padding-right: 5.75rem;
+  }
+
+  .sheet__head .seal {
+    width: 4.5rem;
+    height: 4.5rem;
+  }
 }
 
 .form {
